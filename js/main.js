@@ -4,7 +4,7 @@
 
 
 // - Описати скріпт, котрий, якщо доєднати до будь-якої сторінки дозволить зробити наступне:
-//     При лівому кліку миші  зробить popup (спливаючий блок) в якому буде вся інформація про блок.
+//     При лівому кліку миші  зробить popup (вспливаючий блок) в якому буде вся інформація про блок.
 //     Інформація яку потрібно вивести в popup: Назва тегу, список класів, список ід, розміри в форматі висота*ширина
 //
 
@@ -122,8 +122,34 @@ let usersWithAddress = [
     {id: 10, name: 'olya', age: 31, status: false, address: {city: 'Lviv', street: 'Shevchenko', number: 16}},
     {id: 11, name: 'max', age: 31, status: true, address: {city: 'Ternopil', street: 'Shevchenko', number: 121}}
 ];
+
+document.write(`<hr><b>Исходные данные пользователей: </b><hr>`);
+
+for (let i = 0; i < usersWithAddress.length; i++) {
+    let allUsers = usersWithAddress[i];
+    document.write(`<p>Данные пользователя <b><u>${allUsers["name"]}</u></b>:</p>`);
+    document.write(`<hr>`);
+    for (let allUsersKey in allUsers) {
+        if (typeof allUsers[allUsersKey] !== "object") {
+            document.write(`<li>${allUsersKey} = ${allUsers[allUsersKey]}</li>`);
+        } else {
+            let usersAdress = allUsers.address;
+            document.write(`<p><b><u>Address:</u></b></p>`);
+            for (let usersAdressKey in usersAdress) {
+                document.write(`<li>${usersAdressKey} = ${usersAdress[usersAdressKey]}</li>`);
+            };
+        };
+    };
+    document.write(`<hr>`);
+};
+
+
 // - Создать три чекбокса. Каждый из них активирует фильтр для вышеуказаного массива. Фильтры могут работать как вместе так и по отдельности.
 // 1й - отфильтровывает пользователей со статусом false (оставляет со статусом false)
+
+document.write(`<hr>`)
+document.write(`<p><b>Пользователи со статусом "false":</b></p>`)
+document.write(`<hr>`)
 
 let statusFalse = usersWithAddress.filter(function (statusF) {
     return statusF.status === false;
@@ -206,7 +232,8 @@ for (let i = 0; i < cityKyiv.length; i++) {
     let cityKyivElement = cityKyiv[i];
     for (let cityKyivElementKey in cityKyivElement) {
         if (typeof cityKyivElement[cityKyivElementKey] !== "object") {
-            document.write(`<li>${cityKyivElementKey} = ${cityKyivElement[cityKyivElementKey]}</li>`);
+            let firstUpperCityKyivElementKey = cityKyivElementKey.charAt(0).toUpperCase() + cityKyivElementKey.slice(1);
+            document.write(`<li>${firstUpperCityKyivElementKey} = ${cityKyivElement[cityKyivElementKey]}</li>`);
         } else {
             let address = cityKyivElement.address;
             for (let addressKey in address) {
@@ -222,14 +249,133 @@ for (let i = 0; i < cityKyiv.length; i++) {
 //
 //
 //
-// *****(Прям овердоз с рекурсией) Создать функцию которая принимает какой-либо элемент DOM-структуры .Функция создает в боди 2 кнопки (назад/вперед)
-// при нажатии вперед, вы переходите к дочернему элементу, при еще одном нажатии на "вперед", вы переходите к следующему дочернему элементу (лежащему на одном уровне)
-// НО если у (какого-либо)дочеренего элемента есть дети, то нажатие "вперед" позволяет нам войти внутрь элемента и  выводит первого ребенка. и тд.
-//     Когда все дети заканчиваются, мы выходим из данного дочернего элемента и переходим к следующему, лежащему с ним на одном уровне
+// *****(Прям овердоз с рекурсией) Создать функцию которая принимает какой-либо элемент DOM-структуры .
+//Рекурсия пример, начало.
+function factorial(x) {
+    if(x < 0) return;
+    if (x === 0) return 1;
+    return x * factorial(x - 1);
+};
+console.log('Factorial = ', factorial(3));
+
+function pow(x, n) {
+    let resault = 1;
+    for(let i = 0; i < n; i++) {
+        resault *= x;
+    }
+    return resault;
+}
+console.log('Pow = ', pow(2,3));
+
+function powR(x, n) {
+    if (x === 1) {
+        return x;
+    } else {
+        return x * pow(x, n-1)
+    }
+}
+console.log('PowR = ', powR(2,3));
+//Рекурсия пример, конец.
+
+let btn = document.getElementById('btn');
+let btn1 = document.querySelector('.btnBack');
+let btn2 = document.querySelector('.btnForward');
+
+btn.addEventListener('click', function () {
+
+    btn1.classList.toggle('hide');
+    btn2.classList.toggle('hide');
+
+});
+
+
+// Функция создает в боди 2 кнопки (назад/вперед) при нажатии вперед, вы переходите к дочернему элементу,
+// при еще одном нажатии на "вперед", вы переходите к следующему дочернему элементу (лежащему на одном уровне)
+// НО если у (какого-либо)дочеренего элемента есть дети, то нажатие "вперед" позволяет нам войти внутрь
+// элемента и  выводит первого ребенка. и тд.
+// Когда все дети заканчиваются, мы выходим из данного дочернего элемента и переходим к следующему, лежащему с ним на одном уровне
 //
 // - Напишите «Карусель» – ленту изображений, которую можно листать влево-вправо нажатием на стрелочки.
 //
+
+let prev = document.getElementById('btn-prev');
+let next = document.getElementById('btn-next');
+let slides = document.querySelectorAll('.slide');
+let dots = document.querySelectorAll('.dot');
+
+let index = 0;
+
+const activeSlide = n => {
+    for (slide of slides) {
+        slide.classList.remove('active');
+    }
+    slides[n].classList.add('active');
+};
+
+const activeDot = n => {
+    for (dot of dots) {
+        dot.classList.remove('active');
+    }
+    dots[n].classList.add('active');
+};
+
+const prepareCurrentSlide = ind => {
+    activeSlide(ind);
+    activeDot(ind);
+};
+
+const nextSlide = () => {
+    if (index == slides.length - 1) {
+        index = 0;
+        prepareCurrentSlide (index);
+    } else {
+        index++;
+        prepareCurrentSlide (index);
+    };
+}
+
+next.addEventListener('click', nextSlide);
+
+const prevSlide = () => {
+    if (index == 0) {
+        index = slides.length - 1;
+        prepareCurrentSlide (index);
+    } else {
+        index--;
+        prepareCurrentSlide (index);
+    };
+}
+
+prev.addEventListener('click', prevSlide);
+
+dots.forEach((item, indexDot) => {
+    item.addEventListener('click', () => {
+        index = indexDot;
+        prepareCurrentSlide (index);
+    });
+});
+
+setInterval(nextSlide, 2500);
+
 //     Завдання важке для розуміння, але дуже легке в реалізації. Тут треба буде погуглити
 // *** При виділені сегменту тексту на сторінці він стає жирний/курсивний/або якось іншим способом змінює свій стан
 //
 
+(function () {
+    var showSelectedText = function (e) {
+        var text = '';
+        console.log('dsdsdsdFFFFF', e.target.textContent);
+        if (window.getSelection) {
+            text = window.getSelection();
+        } else if (document.getSelection) {
+            text = document.getSelection();
+        } else if (document.selection) {
+            text = document.selection.createRange().text;
+        }
+        text.toString().toUpperCase();
+    };
+    document.onmouseup = showSelectedText;
+    if (!document.all) {
+        document.captureEvents(Event.MOUSEUP);
+    };
+})();

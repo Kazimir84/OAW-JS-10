@@ -295,6 +295,7 @@ btn.addEventListener('click', function () {
 // элемента и  выводит первого ребенка. и тд.
 // Когда все дети заканчиваются, мы выходим из данного дочернего элемента и переходим к следующему, лежащему с ним на одном уровне
 //
+
 // - Напишите «Карусель» – ленту изображений, которую можно листать влево-вправо нажатием на стрелочки.
 //
 
@@ -359,12 +360,12 @@ setInterval(nextSlide, 2500);
 
 //     Завдання важке для розуміння, але дуже легке в реалізації. Тут треба буде погуглити
 // *** При виділені сегменту тексту на сторінці він стає жирний/курсивний/або якось іншим способом змінює свій стан
-//
 
+//В даному випадку літери стають великими при виділенні мишею.
 (function () {
     var showSelectedText = function (e) {
         var text = '';
-        console.log('dsdsdsdFFFFF', e.target.textContent);
+
         if (window.getSelection) {
             text = window.getSelection();
         } else if (document.getSelection) {
@@ -372,10 +373,22 @@ setInterval(nextSlide, 2500);
         } else if (document.selection) {
             text = document.selection.createRange().text;
         }
-        text.toString().toUpperCase();
-    };
-    document.onmouseup = showSelectedText;
-    if (!document.all) {
-        document.captureEvents(Event.MOUSEUP);
-    };
+        console.log(text.toString());
+
+        let textSelected = text.anchorNode.nodeValue;
+
+        let startSlice = text.baseOffset;
+        let endSlice = text.extentOffset;
+        let selectUpper = textSelected.slice(startSlice, endSlice).toUpperCase();
+        let count = (endSlice - startSlice);
+
+        let splited = selectUpper.split('');
+        let textSliped = textSelected.split('')
+            textSliped.splice(startSlice, count, ...splited);
+            text.anchorNode.textContent = textSliped.join('');
+    }
+        document.onmouseup = showSelectedText;
+            if (!document.all) {
+             document.captureEvents(Event.MOUSEUP);
+        }
 })();

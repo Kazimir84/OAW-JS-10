@@ -277,28 +277,56 @@ function powR(x, n) {
 console.log('PowR = ', powR(2,3));
 //Рекурсия пример, конец.
 
-let btn = document.getElementById('btn');
-let btn1 = document.querySelector('.btnBack');
-let btn2 = document.querySelector('.btnForward');
-
-btn.addEventListener('click', function () {
-
-    btn1.classList.toggle('hide');
-    btn2.classList.toggle('hide');
-
-});
-
-
 // Функция создает в боди 2 кнопки (назад/вперед) при нажатии вперед, вы переходите к дочернему элементу,
 // при еще одном нажатии на "вперед", вы переходите к следующему дочернему элементу (лежащему на одном уровне)
 // НО если у (какого-либо)дочеренего элемента есть дети, то нажатие "вперед" позволяет нам войти внутрь
 // элемента и  выводит первого ребенка. и тд.
 // Когда все дети заканчиваются, мы выходим из данного дочернего элемента и переходим к следующему, лежащему с ним на одном уровне
 //
+let btn = document.getElementById('btn');
+let btnBack = document.querySelector('.btnBack');
+let btnForward = document.querySelector('.btnForward');
+
+btn.addEventListener('click', function () {
+    btnBack.classList.toggle('hide');
+    btnForward.classList.toggle('hide');
+});
+
+btnBack.onclick = nextSib;
+let target = btnBack;
+
+function nextSib () {
+    let siblian = target.previousSibling.previousSibling;
+    if (siblian !== null) {
+        target = siblian;
+        console.log('Siblian ', target);
+        let vievPrevSibling = document.createElement('div');
+        vievPrevSibling.innerHTML = `${target.tagName}: ${target.textContent}`;
+        document.body.prepend(vievPrevSibling);
+    } else {
+        target = btnBack;
+        console.log('Siblian ', target);
+    };
+};
+
+btnForward.onclick = forwardSib;
+
+function forwardSib() {
+    let siblian = target.nextSibling.nextSibling;
+    if (siblian !== null) {
+        target = siblian;
+        console.log('Siblian ', target);
+        let vievPrevSibling = document.createElement('div');
+        vievPrevSibling.innerHTML = `${target.tagName}: ${target.textContent}`;
+        document.body.prepend(vievPrevSibling);
+    } else {
+        target = btnBack;
+        console.log('Siblian ', target);
+    };
+};
 
 // - Напишите «Карусель» – ленту изображений, которую можно листать влево-вправо нажатием на стрелочки.
 //
-
 let prev = document.getElementById('btn-prev');
 let next = document.getElementById('btn-next');
 let slides = document.querySelectorAll('.slide');
@@ -326,7 +354,7 @@ const prepareCurrentSlide = ind => {
 };
 
 const nextSlide = () => {
-    if (index == slides.length - 1) {
+    if (index === slides.length - 1) {
         index = 0;
         prepareCurrentSlide (index);
     } else {
@@ -356,7 +384,7 @@ dots.forEach((item, indexDot) => {
     });
 });
 
-setInterval(nextSlide, 2500);
+setInterval(nextSlide, 5000);
 
 //     Завдання важке для розуміння, але дуже легке в реалізації. Тут треба буде погуглити
 // *** При виділені сегменту тексту на сторінці він стає жирний/курсивний/або якось іншим способом змінює свій стан
